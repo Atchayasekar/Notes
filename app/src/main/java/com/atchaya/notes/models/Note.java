@@ -2,19 +2,19 @@ package com.atchaya.notes.models;
 
 import androidx.annotation.NonNull;
 
-public class note {
+public class Note {
 
     private String title;
     private String content;
     private String timestamp;
 
-    public  note(String title,String content,String timestamp) {
+    public Note(String title, String content, String timestamp) {
         this.title = title;
         this.content = content;
         this.timestamp = timestamp;
     }
 
-    public  Note() {
+    public Note() {
 
     }
 
@@ -42,11 +42,11 @@ public class note {
         this.timestamp = timestamp;
     }
     @Override
-    public String SetString(){
+    public String toString(){
         return "Notes{" +
                 "titles=' " + title + '\'' +
-                ", content=' " + content + '\'' +
-                ", timestamp='" + timestamp +'\''
+                " , content=' " + content + '\'' +
+                ", timestamp='" + timestamp +'\'' +
                 '}';
 
 
