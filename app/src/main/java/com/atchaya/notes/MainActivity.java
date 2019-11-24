@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Note note = new Note(title: "some title", content:"some content", timestamp: "some timestamp");
+        Note note = new Note("some title","some content", "some timestamp");
 
         Log.d(TAG, "onCreate: my Note: \" + note.getTitle()");
 
