@@ -16,7 +16,7 @@
 
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="wrap_content"
             android:background="?attr/colorPrimary">
 
 
@@ -30,13 +30,14 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <EditText
+    <com.atchaya.notes.LinedEditText
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/note_text"
         android:textSize="23sp"
         android:textColor="@color/black"
-        android:padding="5dp"/>
+        android:padding="5dp"
+        android:gravity="top"/>
 
 
 
