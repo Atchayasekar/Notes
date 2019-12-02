@@ -18,12 +18,7 @@ public class NoteActivity extends AppCompatActivity implements
         View.OnTouchListener,
         GestureDetector.OnGestureListener,
         GestureDetector.OnDoubleTapListener,
-        View.OnClickListener
-
-
-
-
-{
+        View.OnClickListener {
 
     private static final String TAG = "NoteActivity";
     private static final int EDIT_MODE_ENABLED = 1;
@@ -33,7 +28,7 @@ public class NoteActivity extends AppCompatActivity implements
     private LinedEditText mLinedEditText;
     private EditText mEditTitle;
     private TextView mViewTitle;
-    private RelativeLayout mCheckContainer,mBackArrowContainer;
+    private RelativeLayout mCheckContainer, mBackArrowContainer;
     private ImageButton mCheck, mBackArrow;
 
     //Vars
@@ -41,8 +36,6 @@ public class NoteActivity extends AppCompatActivity implements
     private Note mInitialNote;
     private GestureDetector mGestureDetector;
     private int mMode;
-
-
 
 
     @Override
@@ -57,25 +50,24 @@ public class NoteActivity extends AppCompatActivity implements
         mCheck = findViewById(R.id.toolbar_check);
         mBackArrow = findViewById(R.id.toolbar_check);
 
-        if (getIncomingIntent()){
+        if (getIncomingIntent()) {
 
             // this is NOT a new note(EDIT MODE)
             setNewNoteProperties();
             enableEditMode();
-        }
-        else{
+        } else {
             // this is NOT a new note
             setNoteProperties();
         }
-      
+
         setListener();
     }
 
 
-    private void  setListener(){
+    private void setListener() {
 
         mLinedEditText.setOnTouchListener(this);
-        mGestureDetector =new GestureDetector( this, this);
+        mGestureDetector = new GestureDetector(this, this);
         mViewTitle.setOnClickListener(this);
         mCheck.setOnClickListener(this);
     }
@@ -95,7 +87,7 @@ public class NoteActivity extends AppCompatActivity implements
         return true;
     }
 
-        private void enableEditMode(){
+    private void enableEditMode() {
         mBackArrowContainer.setVisibility(View.GONE);
         mCheckContainer.setVisibility(View.VISIBLE);
 
@@ -103,15 +95,16 @@ public class NoteActivity extends AppCompatActivity implements
         mEditTitle.setVisibility(View.VISIBLE);
 
         mMode = EDIT_MODE_ENABLED;
-        }
-        private void disableEditMode(){
+    }
+
+    private void disableEditMode() {
         mBackArrowContainer.setVisibility(View.VISIBLE);
         mCheckContainer.setVisibility(View.GONE);
 
         mMode = EDIT_MODE_DISBALED;
-        }
+    }
 
-    private void setNoteProperties(){
+    private void setNoteProperties() {
         mViewTitle.setText(mInitialNote.getTitle());
         mEditTitle.setText(mInitialNote.getTitle());
         mLinedEditText.setText(mInitialNote.getContent());
@@ -120,7 +113,7 @@ public class NoteActivity extends AppCompatActivity implements
     }
 
 
-    private void setNewNoteProperties(){
+    private void setNewNoteProperties() {
         mViewTitle.setText("Note Title");
         mEditTitle.setText("Note Title");
     }
@@ -181,13 +174,13 @@ public class NoteActivity extends AppCompatActivity implements
 
     @Override
     public void onClick(View v) {
-        switch (View.getId()){
+        switch (v.getId()) {
 
-            case R.id.toolbar_check:{
+            case R.id.toolbar_check: {
                 disableEditMode();
                 break;
             }
-            case  R.id.note_text_title:{
+            case R.id.note_text_title: {
                 enableEditMode();
                 mEditTitle.requestFocus();
                 mEditTitle.setSelection(mEditTitle.length());
@@ -198,13 +191,14 @@ public class NoteActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        if(mMode == EDIT_MODE_ENABLED){
+        if (mMode == EDIT_MODE_ENABLED) {
             OnClick(mCheck);
-        }
-        else {
+        } else {
             super.onBackPressed();
-
         }
+    }
+
+    private void OnClick(ImageButton mCheck) {
     }
 }
 
