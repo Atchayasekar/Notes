@@ -1,10 +1,12 @@
 package com.atchaya.notes;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -58,6 +60,7 @@ public class NoteActivity extends AppCompatActivity implements
         } else {
             // this is NOT a new note
             setNoteProperties();
+            disableContentInteraction();
         }
 
         setListener();
@@ -70,6 +73,7 @@ public class NoteActivity extends AppCompatActivity implements
         mGestureDetector = new GestureDetector(this, this);
         mViewTitle.setOnClickListener(this);
         mCheck.setOnClickListener(this);
+        mBackArrowContainer.setOnClickListener(this);
     }
 
     private boolean getIncomingIntent() {
@@ -86,6 +90,21 @@ public class NoteActivity extends AppCompatActivity implements
         mIsNewNote = true;
         return true;
     }
+    private void disableContentInteraction(){
+        mLinedEditText.setKeyListener(null);
+        mLinedEditText.setFocusable(true);
+        mLinedEditText.setFocusableInTouchMode(true);
+        mLinedEditText.setCursorVisible(true);
+        mLinedEditText.clearFocus();
+    }
+    private void enableContentInteraction(){
+        mLinedEditText.setKeyListener(new EditText(this).getKeyListener());
+        mLinedEditText.setFocusable(true);
+        mLinedEditText.setFocusableInTouchMode(true);
+        mLinedEditText.setCursorVisible(true);
+        mLinedEditText.requestFocus();
+    }
+
 
     private void enableEditMode() {
         mBackArrowContainer.setVisibility(View.GONE);
@@ -95,6 +114,8 @@ public class NoteActivity extends AppCompatActivity implements
         mEditTitle.setVisibility(View.VISIBLE);
 
         mMode = EDIT_MODE_ENABLED;
+        enableContentInteraction();
+
     }
 
     private void disableEditMode() {
@@ -102,6 +123,15 @@ public class NoteActivity extends AppCompatActivity implements
         mCheckContainer.setVisibility(View.GONE);
 
         mMode = EDIT_MODE_DISBALED;
+        disableContentInteraction();
+    }
+    private void hideSoftkeyboard(){
+        InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = this.getCurrentFocus();
+        if(view == null){
+            view = new View(this);
+        }
+      imm.hideSoftInputFromWindow(view.getWindowToken(),0);
     }
 
     private void setNoteProperties() {
@@ -178,12 +208,17 @@ public class NoteActivity extends AppCompatActivity implements
 
             case R.id.toolbar_check: {
                 disableEditMode();
+                hideSoftkeyboard();
                 break;
             }
             case R.id.note_text_title: {
                 enableEditMode();
                 mEditTitle.requestFocus();
                 mEditTitle.setSelection(mEditTitle.length());
+                break;
+            }
+            case R.id.notes_toolbar_back_arrow:{
+                finish();
                 break;
             }
         }

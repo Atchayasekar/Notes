@@ -3,6 +3,7 @@ package com.atchaya.notes;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -15,7 +16,10 @@ import com.atchaya.notes.models.util.VerticalSpacingItemDecorator;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements NotesRecyclerAdapter.OnNoteListener {
+public class MainActivity extends AppCompatActivity implements
+        NotesRecyclerAdapter.OnNoteListener ,
+        View.OnClickListener
+{
     private static final String TAG ="MainActivity";
 
     // ui components
@@ -34,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements NotesRecyclerAdap
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mRecyclerview = findViewById( R.id.recyclerView);
+
+        findViewById(R.id.fab).setOnClickListener(this);
 
           initRecyclerView();
           insertFakeNoteS();
@@ -75,6 +81,13 @@ public class MainActivity extends AppCompatActivity implements NotesRecyclerAdap
 
 
 
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(this,NoteActivity.class);
+        startActivity(intent);
 
     }
 }
