@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.atchaya.notes.models.Note;
@@ -90,14 +91,16 @@ public class NoteActivity extends AppCompatActivity implements
         mIsNewNote = true;
         return true;
     }
-    private void disableContentInteraction(){
+
+    private void disableContentInteraction() {
         mLinedEditText.setKeyListener(null);
         mLinedEditText.setFocusable(true);
         mLinedEditText.setFocusableInTouchMode(true);
         mLinedEditText.setCursorVisible(true);
         mLinedEditText.clearFocus();
     }
-    private void enableContentInteraction(){
+
+    private void enableContentInteraction() {
         mLinedEditText.setKeyListener(new EditText(this).getKeyListener());
         mLinedEditText.setFocusable(true);
         mLinedEditText.setFocusableInTouchMode(true);
@@ -125,13 +128,14 @@ public class NoteActivity extends AppCompatActivity implements
         mMode = EDIT_MODE_DISBALED;
         disableContentInteraction();
     }
-    private void hideSoftkeyboard(){
+
+    private void hideSoftkeyboard() {
         InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
         View view = this.getCurrentFocus();
-        if(view == null){
+        if (view == null) {
             view = new View(this);
         }
-      imm.hideSoftInputFromWindow(view.getWindowToken(),0);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     private void setNoteProperties() {
@@ -217,7 +221,7 @@ public class NoteActivity extends AppCompatActivity implements
                 mEditTitle.setSelection(mEditTitle.length());
                 break;
             }
-            case R.id.notes_toolbar_back_arrow:{
+            case R.id.notes_toolbar_back_arrow: {
                 finish();
                 break;
             }
@@ -233,9 +237,20 @@ public class NoteActivity extends AppCompatActivity implements
         }
     }
 
-    private void OnClick(ImageButton mCheck) {
+    protected void
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("mode",mMode);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mMode = savedInstanceState.getInt("mode");
+        if(mMode== EDIT_MODE_ENABLED){
+            enableEditMode();
+        }
     }
 }
-
-
-

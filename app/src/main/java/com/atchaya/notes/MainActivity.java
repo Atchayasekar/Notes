@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -64,11 +66,9 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerview.setLayoutManager(linearLayoutManager);
         VerticalSpacingItemDecorator itemDecorator = new VerticalSpacingItemDecorator(10);
         mRecyclerview.addItemDecoration(itemDecorator);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(mRecyclerview);
         mNoteRecyclerAdapter = new NotesRecyclerAdapter(mNotes, this );
         mRecyclerview.setAdapter(mNoteRecyclerAdapter);
-
-
-
     }
 
     @Override
@@ -78,18 +78,46 @@ public class MainActivity extends AppCompatActivity implements
         Intent intent = new Intent( this, NoteActivity.class);
         intent.putExtra("selected_note", mNotes.get(position));
         startActivity(intent);
-
-
-
-
     }
 
     @Override
     public void onClick(View v) {
         Intent intent = new Intent(this,NoteActivity.class);
         startActivity(intent);
+    }
+    private void deleteNote(Note note){
+        mNotes.remove(note);
+        mNoteRecyclerAdapter.notifyDataSetChanged();
 
     }
+    private ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            deleteNote(mNotes.get(viewHolder.getAdapterPosition()));
+
+        }
+    };
+    private ItemTouchHelper.Callback someOtherThing = new ItemTouchHelper.Callback() {
+        @Override
+        public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+            return 0;
+        }
+
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+        }
+    };
 }
 
 
