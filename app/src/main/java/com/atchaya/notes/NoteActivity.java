@@ -11,11 +11,10 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.atchaya.notes.models.Note;
+import com.atchaya.notes.persistence.async.NoteRepository;
 
 public class NoteActivity extends AppCompatActivity implements
         View.OnTouchListener,
@@ -39,8 +38,8 @@ public class NoteActivity extends AppCompatActivity implements
     private Note mInitialNote;
     private GestureDetector mGestureDetector;
     private int mMode;
-
-
+    private NoteRepository mNoteRepository;
+    private Note mFinalNote;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +51,7 @@ public class NoteActivity extends AppCompatActivity implements
         mBackArrowContainer = findViewById(R.id.back_arrow_container);
         mCheck = findViewById(R.id.toolbar_check);
         mBackArrow = findViewById(R.id.toolbar_check);
+        mNoteRepository = new NoteRepository( this);
 
         if (getIncomingIntent()) {
 
@@ -63,13 +63,9 @@ public class NoteActivity extends AppCompatActivity implements
             setNoteProperties();
             disableContentInteraction();
         }
-
         setListener();
     }
-
-
     private void setListener() {
-
         mLinedEditText.setOnTouchListener(this);
         mGestureDetector = new GestureDetector(this, this);
         mViewTitle.setOnClickListener(this);
@@ -80,18 +76,27 @@ public class NoteActivity extends AppCompatActivity implements
     private boolean getIncomingIntent() {
         if (getIntent().hasExtra("selected_note")) {
             mInitialNote = getIntent().getParcelableExtra("selected_note");
-            Log.d(TAG, "getIncomingIntent: " + mInitialNote.toString());
-
+            mFinalNote = getIntent().getParcelableExtra("selected_note");
+   //         Log.d(TAG, "getIncomingIntent: " + mInitialNote.toString());
             mMode = EDIT_MODE_DISBALED;
             mIsNewNote = false;
             return false;
-
         }
         mMode = EDIT_MODE_ENABLED;
         mIsNewNote = true;
         return true;
     }
+    private void saveChanges(){
+        if(mIsNewNote){
+            saveNewNote();
+        }
+        else {
+        }
+    }
+    private void saveNewNote(){
+        mNoteRepository.insertNoteTask(mFinalNote);
 
+    }
     private void disableContentInteraction() {
         mLinedEditText.setKeyListener(null);
         mLinedEditText.setFocusable(true);
@@ -99,7 +104,6 @@ public class NoteActivity extends AppCompatActivity implements
         mLinedEditText.setCursorVisible(true);
         mLinedEditText.clearFocus();
     }
-
     private void enableContentInteraction() {
         mLinedEditText.setKeyListener(new EditText(this).getKeyListener());
         mLinedEditText.setFocusable(true);
@@ -107,8 +111,6 @@ public class NoteActivity extends AppCompatActivity implements
         mLinedEditText.setCursorVisible(true);
         mLinedEditText.requestFocus();
     }
-
-
     private void enableEditMode() {
         mBackArrowContainer.setVisibility(View.GONE);
         mCheckContainer.setVisibility(View.VISIBLE);
@@ -118,7 +120,6 @@ public class NoteActivity extends AppCompatActivity implements
 
         mMode = EDIT_MODE_ENABLED;
         enableContentInteraction();
-
     }
 
     private void disableEditMode() {
@@ -127,8 +128,21 @@ public class NoteActivity extends AppCompatActivity implements
 
         mMode = EDIT_MODE_DISBALED;
         disableContentInteraction();
-    }
 
+        String temp = mLinedEditText.getText().toString();
+        temp = temp.replace("\n", "");
+        temp = temp.replace("\n","");
+        if(temp.length()>0){
+            mFinalNote.setTitle(mEditTitle.getText().toString());
+            mInitialNote.setContent(mLinedEditText.getText().toString());
+            String timestamp = "Jan 2019";
+            mFinalNote.setTimestamp(timestamp);
+            if(!mFinalNote.getContent().equals(mInitialNote.getContent())
+            || !mFinalNote.getTitle().equals(mInitialNote.getTitle())){
+                saveChanges();
+            }
+        }
+    }
     private void hideSoftkeyboard() {
         InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
         View view = this.getCurrentFocus();
@@ -137,28 +151,24 @@ public class NoteActivity extends AppCompatActivity implements
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
-
     private void setNoteProperties() {
         mViewTitle.setText(mInitialNote.getTitle());
         mEditTitle.setText(mInitialNote.getTitle());
         mLinedEditText.setText(mInitialNote.getContent());
-
-
     }
-
-
     private void setNewNoteProperties() {
         mViewTitle.setText("Note Title");
         mEditTitle.setText("Note Title");
+
+        mInitialNote = new Note();
+        mFinalNote = new Note();
+        mInitialNote.setTitle("Note Title");
+        mFinalNote.setTitle("Note Title");
     }
-
-
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-
         return mGestureDetector.onTouchEvent(event);
     }
-
     @Override
     public boolean onDown(MotionEvent e) {
         return false;
@@ -166,7 +176,6 @@ public class NoteActivity extends AppCompatActivity implements
 
     @Override
     public void onShowPress(MotionEvent e) {
-
     }
 
     @Override
@@ -181,9 +190,7 @@ public class NoteActivity extends AppCompatActivity implements
 
     @Override
     public void onLongPress(MotionEvent e) {
-
     }
-
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         return false;
@@ -237,14 +244,13 @@ public class NoteActivity extends AppCompatActivity implements
         }
     }
 
-    protected void
-
+    private void OnClick(ImageButton mCheck) {
+    }
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("mode",mMode);
     }
-
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
